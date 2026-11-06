@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Muzik Latar — Jom Teroka Sejarah!</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:transparent;font-family:'Trebuchet MS',Arial,sans-serif;color:#75400f}
+.wrap{display:flex;justify-content:center;padding:12px}
+.player{width:min(100%,480px);border:2px solid #eed8b6;border-radius:20px;background:#fff8e9;box-shadow:0 6px 18px #8e5a241a;padding:13px 16px;display:flex;align-items:center;gap:13px}
+.icon{flex:none;width:44px;height:44px;border-radius:14px;background:#ffe5ad;display:grid;place-items:center;font-size:25px}
+.copy{min-width:0;flex:1}
+.title{font-size:15px;font-weight:800;margin:0 0 3px}
+.status{font-size:12px;color:#98704b;margin:0;line-height:1.4}
+button{border:0;cursor:pointer;border-radius:999px;padding:10px 14px;white-space:nowrap;background:#a45c20;color:#fff;font-size:12px;font-weight:700;box-shadow:0 3px 0 #713b10}
+button:focus-visible{outline:3px solid #ffbc57;outline-offset:3px}
+button:hover{background:#874a18}
+@media(max-width:370px){.player{padding:10px;gap:8px}.icon{width:36px;height:36px;font-size:21px}button{padding:9px 11px;font-size:11px}}
+</style>
+</head>
+<body>
+<div class="wrap"><section class="player" aria-label="Pemain muzik latar">
+  <div class="icon" aria-hidden="true">🎵</div>
+  <div class="copy"><p class="title">Muzik Latar Pengembaraan</p><p id="status" class="status" aria-live="polite">Sedang mencuba main secara automatik…</p></div>
+  <button id="toggle" type="button" aria-label="Mainkan muzik">▶ Main</button>
+</section></div>
+<audio id="bgm" autoplay loop preload="auto" playsinline>
+  <source src="music.mp3" type="audio/mpeg">
+</audio>
+<script>
+(()=>{
+ const audio=document.getElementById('bgm');
+ const button=document.getElementById('toggle');
+ const status=document.getElementById('status');
+ audio.volume=0.35;
+ const update=()=>{
+   const playing=!audio.paused;
+   button.textContent=playing?'⏸ Jeda':'▶ Main';
+   button.setAttribute('aria-label',playing?'Jeda muzik':'Mainkan muzik');
+   status.textContent=playing?'Muzik sedang dimainkan 🎶':'Tekan Main untuk menghidupkan muzik';
+ };
+ button.addEventListener('click',async()=>{
+   if(!audio.paused){audio.pause();update();return;}
+   try{await audio.play();}catch(e){status.textContent='Pelayar tidak membenarkan muzik dimainkan.';}
+   update();
+ });
+ audio.addEventListener('play',update);
+ audio.addEventListener('pause',update);
+ audio.addEventListener('error',()=>{status.textContent='Fail muzik tidak dapat dimuatkan.';});
+ const tryAutoplay=async()=>{
+   try{await audio.play();}catch(e){/* Browser may block autoplay with sound. */}
+   update();
+ };
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',tryAutoplay,{once:true});
+ else tryAutoplay();
+})();
+</script>
+</body></html>
